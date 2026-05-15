@@ -1,0 +1,597 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Akram Difallah - Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Three.js and GSAP for 3D and animations -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#8e9192",
+                        "surface-container-low": "#1b1b1b",
+                        "on-primary-container": "#636565",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-error": "#690005",
+                        "surface-dim": "#131313",
+                        "inverse-on-surface": "#303030",
+                        "primary-container": "#e2e2e2",
+                        "on-secondary-fixed-variant": "#474746",
+                        "inverse-surface": "#e2e2e2",
+                        "on-primary-fixed": "#1a1c1c",
+                        "surface-container-lowest": "#0e0e0e",
+                        "surface-tint": "#c6c6c7",
+                        "inverse-primary": "#5d5f5f",
+                        "surface-variant": "#353535",
+                        "on-secondary-container": "#b7b5b4",
+                        "primary-fixed": "#e2e2e2",
+                        "outline-variant": "#444748",
+                        "tertiary-container": "#e2e2e2",
+                        "surface-bright": "#393939",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary": "#303030",
+                        "secondary": "#c8c6c5",
+                        "on-primary-fixed-variant": "#454747",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "on-primary": "#2f3131",
+                        "background": "#000000", /* Enforce vantablack */
+                        "surface-container-highest": "#111111",
+                        "surface-container": "#0a0a0a",
+                        "on-surface-variant": "#aaaaaa",
+                        "on-tertiary": "#2f3131",
+                        "secondary-container": "#474746",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "primary": "#ffffff",
+                        "on-tertiary-container": "#636565",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "tertiary": "#ffffff",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-background": "#ffffff",
+                        "surface": "#050505",
+                        "on-surface": "#ffffff",
+                        "surface-container-high": "#151515"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0",
+                        "lg": "0",
+                        "xl": "0",
+                        "full": "0"
+                    },
+                    "spacing": {
+                        "margin-desktop": "64px",
+                        "container-max-width": "1440px",
+                        "margin-mobile": "20px",
+                        "unit": "4px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Space Grotesk"],
+                        "body-lg": ["JetBrains Mono"],
+                        "headline-lg": ["Space Grotesk"],
+                        "headline-md": ["Space Grotesk"],
+                        "display-lg": ["Space Grotesk"],
+                        "body-md": ["JetBrains Mono"],
+                        "label-sm": ["JetBrains Mono"],
+                        "mono-micro": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.1", "fontWeight": "600" }],
+                        "body-lg": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "headline-md": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "display-lg": ["96px", { "lineHeight": "0.9", "letterSpacing": "-0.06em", "fontWeight": "700" }],
+                        "body-md": ["12px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-sm": ["10px", { "lineHeight": "1.4", "letterSpacing": "0.1em", "fontWeight": "500" }],
+                        "mono-micro": ["8px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            position: relative;
+            overflow-x: hidden;
+            margin: 0;
+            color: #fff;
+            perspective: 1000px;
+        }
+
+        #webgl-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+        
+        /* Interactive Grid Container */
+        #interactive-wrapper {
+            position: relative;
+            z-index: 10;
+            transition: transform 0.1s ease-out;
+            transform-style: preserve-3d;
+        }
+
+        /* Glitch Effect */
+        .glitch-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .glitch-text {
+            position: relative;
+            color: white;
+            z-index: 2;
+        }
+
+        .glitch-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        .glitch-layer-1 {
+            color: rgba(255, 255, 255, 0.7);
+            transform: translate(-2px, 1px);
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+            animation: glitch-anim-1 2.5s infinite linear alternate-reverse;
+        }
+
+        .glitch-layer-2 {
+            color: rgba(255, 255, 255, 0.5);
+            transform: translate(2px, -1px);
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 {
+            0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 1px); }
+            20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
+            40% { clip-path: inset(40% 0 50% 0); transform: translate(1px, 2px); }
+            60% { clip-path: inset(80% 0 5% 0); transform: translate(-1px, -2px); }
+            80% { clip-path: inset(10% 0 70% 0); transform: translate(2px, 1px); }
+            100% { clip-path: inset(30% 0 50% 0); transform: translate(-2px, -1px); }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% { clip-path: inset(10% 0 60% 0); transform: translate(2px, -1px); }
+            20% { clip-path: inset(30% 0 20% 0); transform: translate(-1px, 2px); }
+            40% { clip-path: inset(70% 0 10% 0); transform: translate(2px, 1px); }
+            60% { clip-path: inset(20% 0 50% 0); transform: translate(-2px, -1px); }
+            80% { clip-path: inset(50% 0 30% 0); transform: translate(1px, 2px); }
+            100% { clip-path: inset(5% 0 80% 0); transform: translate(-1px, -2px); }
+        }
+
+        /* Data Shards */
+        .data-shard {
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            transform-style: preserve-3d;
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            /* Irregular polygon shapes */
+            clip-path: polygon(0 10px, 10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+        }
+
+        .data-shard:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(20, 20, 20, 0.9);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.05);
+            /* Non-linear scaling */
+            transform: scale3d(1.05, 1.05, 1.1) translateZ(40px) rotateX(2deg) rotateY(-2deg);
+            z-index: 20;
+        }
+
+        /* Micro Data Aura */
+        .data-aura {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.08) 0%, transparent 40%);
+            z-index: -1;
+            transition: opacity 0.3s;
+        }
+        
+        .micro-data {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            color: rgba(255,255,255,0.3);
+            position: absolute;
+            writing-mode: vertical-rl;
+            letter-spacing: 2px;
+        }
+
+        /* Command Center Nav */
+        #command-center {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0));
+            padding: 40px 24px 24px;
+            z-index: 100;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .cmd-link {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cmd-link:hover, .cmd-link.active {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
+        }
+        
+        .cmd-link::before {
+            content: '>';
+            margin-right: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .cmd-link:hover::before, .cmd-link.active::before {
+            opacity: 1;
+        }
+
+        .cmd-link .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        /* Ambient Lines */
+        .ambient-line {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+        }
+        .ambient-line.v { width: 1px; height: 100%; top: 0; }
+        .ambient-line.h { height: 1px; width: 100%; left: 0; }
+        
+    </style>
+<style data-stitch-cursor=""></style><style data-stitch-scroll-lock=""></style></head>
+<body class="text-on-background antialiased selection:bg-primary selection:text-surface">
+<!-- 3D Background Container -->
+<div id="webgl-container"><canvas style="display: block; width: 1280px; height: 3106px;" width="1280" height="3106"></canvas></div>
+<div class="data-aura" id="global-aura" style="--mouse-x: 45.9375%; --mouse-y: 85.4475209272376%;"></div>
+<!-- Ambient Grid Lines -->
+<div class="fixed inset-0 pointer-events-none z-0 mix-blend-screen opacity-20">
+<div class="ambient-line v" style="left: 10%;"></div>
+<div class="ambient-line v" style="left: 50%;"></div>
+<div class="ambient-line v" style="left: 90%;"></div>
+<div class="ambient-line h" style="top: 20%;"></div>
+<div class="ambient-line h" style="top: 80%;"></div>
+</div>
+<div id="interactive-wrapper" style="transform: rotateY(-1.04deg) rotateX(-22.02deg);">
+<main class="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop pt-32 pb-48 space-y-48">
+<!-- Hero Section -->
+<section class="min-h-[70vh] flex flex-col justify-center relative">
+<div class="absolute top-0 right-0 micro-data">SYS_INIT: OK // MEM_ALLOC: 1024TB // SEQ_NO: 0x8F2</div>
+<div class="space-y-8 max-w-5xl relative z-10">
+<div class="glitch-wrapper">
+<h1 class="font-display-lg text-display-lg uppercase text-primary tracking-tighter glitch-text">AKRAM DIFALLAH</h1>
+<div aria-hidden="true" class="glitch-layer glitch-layer-1 font-display-lg text-display-lg uppercase tracking-tighter">AKRAM DIFALLAH</div>
+<div aria-hidden="true" class="glitch-layer glitch-layer-2 font-display-lg text-display-lg uppercase tracking-tighter">AKRAM DIFALLAH</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-12 h-[1px] bg-white"></div>
+<h2 class="font-body-lg text-body-lg text-white uppercase tracking-[0.2em]">SYSTEMS THINKER &amp; CLOUD ARCHITECT</h2>
+</div>
+<p class="font-body-lg text-body-lg text-white/60 max-w-2xl mt-8 leading-relaxed font-mono">
+                    [ARCHITECTING] resilient infrastructure and scalable cloud environments. Blending brutalist engineering principles with minimal operational overhead.
+                </p>
+<div class="pt-12 flex flex-wrap gap-4 relative z-20">
+<button class="bg-white text-black font-label-sm text-label-sm uppercase px-8 py-3 hover:bg-white/80 transition-all font-mono border border-white">
+                        EXECUTE ./VIEW_PROJECTS.SH
+                    </button>
+<button class="bg-black text-white font-label-sm text-label-sm uppercase px-8 py-3 border border-white/20 hover:border-white transition-all font-mono">
+                        INITIATE_CONTACT()
+                    </button>
+</div>
+</div>
+</section>
+<!-- Projects Section -->
+<section class="relative" id="projects">
+<div class="flex justify-between items-end mb-16 border-b border-white/20 pb-4">
+<h3 class="font-headline-lg text-headline-lg uppercase tracking-tight">MES ARCHITECTURES</h3>
+<span class="font-mono-micro text-mono-micro text-white/40 uppercase">MODULE_ID: 0xPRJ</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Card 1 -->
+<div class="data-shard p-10 group">
+<div class="absolute top-2 right-2 font-mono-micro text-mono-micro text-white/30">NODE_01</div>
+<div class="flex justify-between items-start mb-12 border-b border-white/10 pb-4">
+<h4 class="font-headline-md text-headline-md uppercase group-hover:text-white transition-colors">Déploiement Cloud Privé</h4>
+<span class="material-symbols-outlined text-white/30 group-hover:text-white transition-colors">cloud</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="border border-white/10 bg-black/50 px-3 py-1 font-mono-micro text-mono-micro text-white/60 uppercase tracking-widest group-hover:border-white/30 transition-colors">OpenStack</span>
+<span class="border border-white/10 bg-black/50 px-3 py-1 font-mono-micro text-mono-micro text-white/60 uppercase tracking-widest group-hover:border-white/30 transition-colors">Virtualisation</span>
+<span class="border border-white/10 bg-black/50 px-3 py-1 font-mono-micro text-mono-micro text-white/60 uppercase tracking-widest group-hover:border-white/30 transition-colors">Xubuntu</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="data-shard p-10 group">
+<div class="absolute top-2 right-2 font-mono-micro text-mono-micro text-white/30">NODE_02</div>
+<div class="flex justify-between items-start mb-12 border-b border-white/10 pb-4">
+<h4 class="font-headline-md text-headline-md uppercase group-hover:text-white transition-colors">Big Data &amp; IoT Analytics</h4>
+<span class="material-symbols-outlined text-white/30 group-hover:text-white transition-colors">database</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="border border-white/10 bg-black/50 px-3 py-1 font-mono-micro text-mono-micro text-white/60 uppercase tracking-widest group-hover:border-white/30 transition-colors">Cassandra</span>
+<span class="border border-white/10 bg-black/50 px-3 py-1 font-mono-micro text-mono-micro text-white/60 uppercase tracking-widest group-hover:border-white/30 transition-colors">Java</span>
+<span class="border border-white/10 bg-black/50 px-3 py-1 font-mono-micro text-mono-micro text-white/60 uppercase tracking-widest group-hover:border-white/30 transition-colors">PostgreSQL</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Experience Timeline -->
+<section class="relative" id="experience">
+<div class="flex justify-between items-end mb-16 border-b border-white/20 pb-4">
+<h3 class="font-headline-lg text-headline-lg uppercase tracking-tight">MON PARCOURS</h3>
+<span class="font-mono-micro text-mono-micro text-white/40 uppercase">MODULE_ID: 0xEXP</span>
+</div>
+<div class="relative pl-8 space-y-12 border-l border-white/10">
+<!-- Timeline Item 1 -->
+<div class="relative data-shard p-8 ml-8 group">
+<div class="absolute -left-[41px] top-8 w-2 h-2 bg-white group-hover:scale-150 transition-transform shadow-[0_0_10px_#fff]"></div>
+<div class="absolute -left-[40px] top-8 w-8 h-[1px] bg-white/30 group-hover:bg-white transition-colors"></div>
+<div class="font-mono-micro text-mono-micro text-white/50 mb-2 tracking-widest">T: 2023 - PRESENT</div>
+<h4 class="font-headline-md text-headline-md mb-2 uppercase">Master RTIC</h4>
+<p class="font-body-md text-body-md text-white/60 font-mono">Advanced studies in Reseaux, Telecommunications and Cloud Infrastructure.</p>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative data-shard p-8 ml-8 group">
+<div class="absolute -left-[41px] top-8 w-2 h-2 border border-white bg-black group-hover:bg-white group-hover:scale-150 transition-all"></div>
+<div class="absolute -left-[40px] top-8 w-8 h-[1px] bg-white/30 group-hover:bg-white transition-colors"></div>
+<div class="font-mono-micro text-mono-micro text-white/50 mb-2 tracking-widest">T: 2022</div>
+<h4 class="font-headline-md text-headline-md mb-2 uppercase">Stage Industriel Sonatrach</h4>
+<p class="font-body-md text-body-md text-white/60 font-mono">Design and optimization of enterprise-grade network architectures.</p>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Command Center Navigation -->
+<nav id="command-center">
+<a class="cmd-link" href="#home">cd /home</a>
+<a class="cmd-link" href="#projects">ls ./projects</a>
+<a class="cmd-link active" href="#experience">cat history.log</a>
+<a class="cmd-link" href="#contact">ping -c 4 contact<span class="blink">_</span></a>
+<button class="cmd-link">sudo ./resume.pdf</button>
+</nav>
+<script>
+    // Global interactivity variables
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let targetX = 0;
+    let targetY = 0;
+    const windowHalfX = window.innerWidth / 2;
+    const windowHalfY = window.innerHeight / 2;
+
+    // Track mouse movement for tilt and aura
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        
+        // Tilt calculation
+        targetX = (mouseX - windowHalfX) * 0.02;
+        targetY = (mouseY - windowHalfY) * 0.02;
+
+        // Aura effect update
+        const aura = document.getElementById('global-aura');
+        aura.style.setProperty('--mouse-x', `${(mouseX / window.innerWidth) * 100}%`);
+        aura.style.setProperty('--mouse-y', `${(mouseY / window.innerHeight) * 100}%`);
+    });
+
+    // Apply tilt to main wrapper
+    function updateTilt() {
+        const wrapper = document.getElementById('interactive-wrapper');
+        // Subtle tilt
+        wrapper.style.transform = `rotateY(${targetX}deg) rotateX(${-targetY}deg)`;
+        requestAnimationFrame(updateTilt);
+    }
+    updateTilt();
+
+    // Neural Synapse Simulation (Three.js WebGL replacement)
+    const container = document.getElementById('webgl-container');
+    const scene = new THREE.Scene();
+    // Vantablack fog
+    scene.fog = new THREE.FogExp2(0x000000, 0.002);
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+
+    // Neural Synapse Nodes
+    const nodeCount = 300;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(nodeCount * 3);
+    const velocities = [];
+
+    // Monochrome material
+    const pbrMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.8
+    });
+
+    const lineMaterial = new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.05
+    });
+
+    const nodeGeometry = new THREE.OctahedronGeometry(1, 0); // Geometric shape
+
+    for (let i = 0; i < nodeCount; i++) {
+        const x = (Math.random() - 0.5) * 600;
+        const y = (Math.random() - 0.5) * 600;
+        const z = (Math.random() - 0.5) * 400 - 100;
+
+        positions[i * 3] = x;
+        positions[i * 3 + 1] = y;
+        positions[i * 3 + 2] = z;
+
+        velocities.push({
+            x: (Math.random() - 0.5) * 0.2,
+            y: (Math.random() - 0.5) * 0.2,
+            z: (Math.random() - 0.5) * 0.2
+        });
+
+        const sizeScale = Math.random() > 0.8 ? 2 : 0.5;
+        const mesh = new THREE.Mesh(nodeGeometry, pbrMaterial);
+        mesh.position.set(x, y, z);
+        mesh.scale.setScalar(sizeScale);
+        mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+        
+        scene.add(mesh);
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    // Initial lines setup
+    const lineGeo = new THREE.BufferGeometry();
+    const linePos = new Float32Array(nodeCount * nodeCount * 3); // Over-allocate, update dynamically
+    lineGeo.setAttribute('position', new THREE.BufferAttribute(linePos, 3));
+    const lines = new THREE.LineSegments(lineGeo, lineMaterial);
+    scene.add(lines);
+
+    camera.position.z = 150;
+
+    // Command center active state logic
+    const cmdLinks = document.querySelectorAll('.cmd-link');
+    cmdLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            cmdLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Animation Loop
+    let time = 0;
+    function animate() {
+        requestAnimationFrame(animate);
+        time += 0.01;
+
+        // Camera subtle pan based on mouse
+        camera.position.x += (targetX * 5 - camera.position.x) * 0.05;
+        camera.position.y += (-targetY * 5 - camera.position.y) * 0.05;
+        camera.lookAt(scene.position);
+
+        // Update synapse nodes positions
+        const meshes = scene.children.filter(c => c.type === 'Mesh');
+        const posArray = geometry.attributes.position.array;
+        
+        let lineIdx = 0;
+
+        for(let i=0; i<nodeCount; i++) {
+            // Drift
+            meshes[i].position.x += velocities[i].x;
+            meshes[i].position.y += velocities[i].y;
+            meshes[i].position.z += velocities[i].z;
+            meshes[i].rotation.x += 0.01;
+            meshes[i].rotation.y += 0.01;
+
+            // Bounds check
+            if(Math.abs(meshes[i].position.x) > 300) velocities[i].x *= -1;
+            if(Math.abs(meshes[i].position.y) > 300) velocities[i].y *= -1;
+            if(meshes[i].position.z > 100 || meshes[i].position.z < -400) velocities[i].z *= -1;
+
+            posArray[i*3] = meshes[i].position.x;
+            posArray[i*3+1] = meshes[i].position.y;
+            posArray[i*3+2] = meshes[i].position.z;
+
+            // Calculate connections dynamically
+            for(let j=i+1; j<nodeCount; j++) {
+                const dx = meshes[i].position.x - meshes[j].position.x;
+                const dy = meshes[i].position.y - meshes[j].position.y;
+                const dz = meshes[i].position.z - meshes[j].position.z;
+                const distSq = dx*dx + dy*dy + dz*dz;
+                
+                // Connection threshold
+                if(distSq < 4000) {
+                    linePos[lineIdx++] = meshes[i].position.x;
+                    linePos[lineIdx++] = meshes[i].position.y;
+                    linePos[lineIdx++] = meshes[i].position.z;
+                    linePos[lineIdx++] = meshes[j].position.x;
+                    linePos[lineIdx++] = meshes[j].position.y;
+                    linePos[lineIdx++] = meshes[j].position.z;
+                }
+            }
+        }
+        
+        // Update lines
+        lines.geometry.setDrawRange(0, lineIdx / 3);
+        lines.geometry.attributes.position.needsUpdate = true;
+
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Resize Handler
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>
+
+
+<div class="fixed bottom-32 right-8 z-[110] flex flex-col items-center group">
+  <button class="w-14 h-14 rounded-full bg-white/5 border border-white/20 backdrop-blur-md flex items-center justify-center relative overflow-hidden transition-all duration-300 hover:border-white/50 hover:bg-white/10">
+    <!-- Pulse Effect Layers -->
+    <div class="absolute inset-0 rounded-full animate-ping opacity-20 bg-white"></div>
+    <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-white/10 to-transparent"></div>
+    
+    <!-- Assistant Image -->
+    <img src="{{DATA:IMAGE:IMAGE_12}}" class="w-8 h-8 object-contain relative z-10 opacity-80 group-hover:opacity-100 transition-opacity" alt="AI Assistant">
+
+    <!-- Sentient Glow -->
+    <div class="absolute -inset-2 bg-white/5 blur-xl rounded-full animate-pulse"></div>
+  </button>
+  <span class="font-mono-micro text-mono-micro text-white/40 uppercase mt-2 opacity-0 group-hover:opacity-100 transition-opacity tracking-widest">AI_ASSISTANT</span>
+</div></body></html>

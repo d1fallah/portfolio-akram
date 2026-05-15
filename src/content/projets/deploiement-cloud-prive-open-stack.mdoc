@@ -1,0 +1,42 @@
+---
+titre: Déploiement Cloud Privé (OpenStack)
+categorie: Cloud Computing & Infrastructure
+description_courte: >-
+  Conception, déploiement et administration d'une infrastructure IaaS
+  (Infrastructure as a Service) sur mesure, permettant le provisionnement
+  dynamique de ressources calcul et réseau.
+tags:
+  - OpenStack
+  - Xubuntu 22.04 LTS
+  - Virtualisation
+ordre: 3
+screenshots:
+  - /images/projets/deploiement-cloud-prive-open-stack/screenshots/0.png
+  - /images/projets/deploiement-cloud-prive-open-stack/screenshots/1.png
+  - /images/projets/deploiement-cloud-prive-open-stack/screenshots/2.png
+  - /images/projets/deploiement-cloud-prive-open-stack/screenshots/3.png
+  - /images/projets/deploiement-cloud-prive-open-stack/screenshots/4.png
+  - /images/projets/deploiement-cloud-prive-open-stack/screenshots/5.png
+  - /images/projets/deploiement-cloud-prive-open-stack/screenshots/6.png
+  - /images/projets/deploiement-cloud-prive-open-stack/screenshots/7.png
+  - /images/projets/deploiement-cloud-prive-open-stack/screenshots/8.png
+---
+### Vue d'ensemble de l'Infrastructure
+
+Afin de maîtriser les couches basses du Cloud Computing sans dépendre des fournisseurs publics (AWS, Azure), j'ai conçu et déployé ma propre infrastructure de cloud privé. Ce projet démontre la capacité à installer, configurer et opérer un environnement IaaS (Infrastructure as a Service) complet, stable et opérationnel.
+
+### Architecture du Déploiement
+
+L'environnement a été bâti pour optimiser l'allocation des ressources matérielles tout en garantissant une haute disponibilité des services :
+
+- **Hyperviseur & OS :** Déploiement réalisé sur un environnement Xubuntu 22.04 LTS.
+- **Orchestration :** Utilisation de l'architecture MicroStack pour implémenter les services cœurs d'OpenStack.
+- **Gestion des Images (Glance) :** Importation et gestion d'images système allégées (CirrOS) pour valider le provisionnement rapide via des gabarits (flavors) personnalisés (ex: profils m1.micro, m1.nano).
+
+### Ingénierie Réseau & Sécurité (SDN)
+
+En tant qu'étudiant spécialisé en réseaux, l'accent a été mis sur la topologie et l'isolation :
+
+- **Software-Defined Networking (Neutron) :** Création de réseaux virtuels isolés (Private Subnets) et de réseaux partagés.
+- **Sécurité & Accès :** Configuration stricte des groupes de sécurité, gestion des paires de clés SSH, et accès direct via console VNC (QEMU) pour le débogage de bas niveau.
+- **Exposition API :** Configuration des points de terminaison (Endpoints) pour l'ensemble des microservices (Compute, Block Storage, Identity, Image) afin de permettre une future automatisation de l'infrastructure via des scripts externes.

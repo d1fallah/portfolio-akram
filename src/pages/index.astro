@@ -1,11 +1,482 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import { getCollection, getEntry, render } from "astro:content";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// Récupération des Singletons
+const hero = await getEntry("sections", "hero");
+const contact = await getEntry("sections", "contact");
+
+// Récupération des Collections
+const tousLesProjets = await getCollection("projets");
+const projetsTries = tousLesProjets.sort((a, b) => a.data.ordre - b.data.ordre);
+
+const toutLeParcours = await getCollection("parcours");
+const parcoursTrie = toutLeParcours.sort((a, b) => a.data.ordre - b.data.ordre);
 ---
 
 <Layout>
-	<Welcome />
+  <main class="max-w-[1440px] mx-auto px-5 md:px-16 pt-32 pb-48 space-y-48">
+    <!-- Hero Section -->
+    <section id="home" class="min-h-[70vh] flex flex-col justify-center relative">
+      <div class="absolute top-0 right-0 micro-data text-[10px] text-white/30 hidden md:block">SYS_INIT: OK // MEM_ALLOC: 1024TB // SEQ_NO: 0x8F2</div>
+      
+      <div class="space-y-8 max-w-5xl relative z-10">
+        <div class="glitch-wrapper">
+          <h1 class="font-[Space_Grotesk] text-5xl md:text-7xl lg:text-9xl uppercase text-white tracking-tighter glitch-text leading-none font-bold">
+            {hero?.data?.titre || "AKRAM DIFALLAH"}
+          </h1>
+          <div aria-hidden="true" class="glitch-layer glitch-layer-1 font-[Space_Grotesk] text-5xl md:text-7xl lg:text-9xl uppercase tracking-tighter leading-none font-bold">
+            {hero?.data?.titre || "AKRAM DIFALLAH"}
+          </div>
+          <div aria-hidden="true" class="glitch-layer glitch-layer-2 font-[Space_Grotesk] text-5xl md:text-7xl lg:text-9xl uppercase tracking-tighter leading-none font-bold">
+            {hero?.data?.titre || "AKRAM DIFALLAH"}
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-[1px] bg-white"></div>
+          <h2 class="font-[JetBrains_Mono] text-sm md:text-base text-white uppercase tracking-[0.2em]">
+            {hero?.data?.sousTitre || "SYSTEMS THINKER & CLOUD ARCHITECT"}
+          </h2>
+        </div>
+
+        <p class="font-[JetBrains_Mono] text-sm md:text-base text-white/60 max-w-2xl mt-8 leading-relaxed">
+          {hero?.data?.description || "[ARCHITECTING] resilient infrastructure and scalable cloud environments. Blending brutalist engineering principles with minimal operational overhead."}
+        </p>
+
+        <div class="pt-12 flex flex-wrap gap-4 relative z-20">
+          <a href="#projects" data-smooth-scroll class="bg-white text-black font-[JetBrains_Mono] text-xs md:text-sm uppercase px-8 py-3 hover:bg-white/80 transition-all border border-white text-center">
+            EXECUTE ./VIEW_PROJECTS.SH
+          </a>
+          <a href="/cv.pdf" class="bg-black text-white font-[JetBrains_Mono] text-xs md:text-sm uppercase px-8 py-3 border border-white/20 hover:border-white transition-all text-center">
+            INITIATE_CONTACT()
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="relative" id="projects">
+      <div class="flex justify-between items-end mb-16 border-b border-white/20 pb-4">
+        <h3 class="font-[Space_Grotesk] text-3xl md:text-5xl uppercase tracking-tight font-bold">MES ARCHITECTURES</h3>
+        <span class="font-[JetBrains_Mono] text-[10px] text-white/40 uppercase hidden md:block">MODULE_ID: 0xPRJ</span>
+      </div>
+
+      {projetsTries.length === 0 ? (
+        <div class="w-full border border-dashed border-white/20 p-12 text-center bg-white/[0.02] backdrop-blur-md">
+          <p class="font-[JetBrains_Mono] text-white/60 text-sm uppercase tracking-widest">
+            [ SYSTÈME : EN ATTENTE DES DONNÉES TÉLÉMÉTRIQUES... ]
+          </p>
+        </div>
+      ) : (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {projetsTries.map((projet, index) => (
+            <div onclick={`document.getElementById('modal-${projet.id}').showModal()`} class="data-shard p-10 group cursor-pointer">
+              <div class="absolute top-2 right-2 z-10 font-[JetBrains_Mono] text-[10px] text-white/30">
+                NODE_{String(index + 1).padStart(2, '0')}
+              </div>
+              
+              {projet.data.screenshots && projet.data.screenshots.length > 0 && (
+                <div class="mb-8 overflow-hidden border border-white/10 group-hover:border-white/30 transition-colors bg-black">
+                  <img 
+                    src={projet.data.screenshots[0]} 
+                    alt={`Aperçu de ${projet.data.titre}`}
+                    class="w-full h-48 sm:h-56 object-cover object-top opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
+                  />
+                </div>
+              )}
+
+              <div class="flex justify-between items-start mb-8 border-b border-white/10 pb-4">
+                <h4 class="font-[Space_Grotesk] text-2xl md:text-3xl uppercase group-hover:text-white transition-colors text-white/80 font-semibold">
+                  {projet.data.titre}
+                </h4>
+                <span class="material-symbols-outlined text-white/30 group-hover:text-white transition-colors">
+                  {projet.data.categorie === 'Cloud' ? 'cloud' : projet.data.categorie === 'Data' ? 'database' : 'terminal'}
+                </span>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                {projet.data.tags.map((tag: string) => (
+                  <span class="border border-white/10 bg-black/50 px-3 py-1 font-[JetBrains_Mono] text-[10px] md:text-xs text-white/60 uppercase tracking-widest group-hover:border-white/30 transition-colors">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <!-- Modales Projets -->
+      {projetsTries.map(async (projet) => {
+        const { Content } = await render(projet);
+        const screenshots = projet.data.screenshots ?? [];
+        return (
+          <dialog id={`modal-${projet.id}`} class="bg-transparent m-auto p-4 max-w-4xl w-full backdrop:bg-black/90 backdrop:backdrop-blur-sm">
+            <div class="data-shard p-0 border border-white/20 w-full overflow-hidden max-h-[90vh] flex flex-col">
+              <button onclick={`document.getElementById('modal-${projet.id}').close()`} class="absolute top-4 right-4 z-10 text-white/50 hover:text-white transition-colors bg-black/60 p-1">
+                <span class="material-symbols-outlined" style="font-size:18px;">close</span>
+              </button>
+
+              {/* Header strip — screenshot gallery if images exist, fallback label otherwise */}
+              {screenshots.length > 0 ? (
+                <div class="w-full border-b border-white/10 overflow-x-auto flex gap-2 p-2 bg-black shrink-0" style="scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;">
+                  {screenshots.map((src: string, i: number) => (
+                    <img
+                      src={src}
+                      alt={`Screenshot ${i + 1} — ${projet.data.titre}`}
+                      class="h-64 sm:h-80 w-auto object-cover shrink-0 border border-white/10 hover:border-white/40 transition-colors cursor-zoom-in"
+                      onclick={`openLightbox('${src}')`}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div class="w-full h-20 border-b border-white/10 flex items-center justify-center bg-white/[0.03] shrink-0">
+                  <span class="text-white/30 font-[JetBrains_Mono] text-xs uppercase tracking-widest">[ MODULE : {projet.data.titre} ]</span>
+                </div>
+              )}
+
+              {/* Scrollable content body */}
+              <div class="p-8 md:p-10 bg-black/60 overflow-y-auto">
+                <div class="flex flex-wrap gap-2 mb-6">
+                  {projet.data.tags.map((tag: string) => (
+                    <span class="font-[JetBrains_Mono] text-[10px] uppercase tracking-widest px-2 py-1 text-white/50" style="border: 1px solid rgba(255,255,255,0.1);">{tag}</span>
+                  ))}
+                </div>
+                <h3 class="font-[Space_Grotesk] text-2xl md:text-3xl font-bold text-white mb-6 tracking-tight uppercase">
+                  {projet.data.titre}
+                </h3>
+                <div class="prose prose-invert max-w-none text-white/70 font-[JetBrains_Mono] text-sm prose-headings:font-[Space_Grotesk] prose-headings:uppercase prose-a:text-white prose-a:underline prose-li:marker:text-white/50">
+                  <Content />
+                </div>
+              </div>
+            </div>
+          </dialog>
+        );
+      })}
+    </section>
+
+    <!-- Experience Timeline -->
+    <section class="relative" id="experience">
+      <div class="flex justify-between items-end mb-16 border-b border-white/20 pb-4">
+        <h3 class="font-[Space_Grotesk] text-3xl md:text-5xl uppercase tracking-tight font-bold">MON PARCOURS</h3>
+        <span class="font-[JetBrains_Mono] text-[10px] text-white/40 uppercase hidden md:block">MODULE_ID: 0xEXP</span>
+      </div>
+      
+      {parcoursTrie.length === 0 ? (
+        <div class="w-full border border-dashed border-white/20 p-12 text-center bg-white/[0.02] backdrop-blur-md">
+          <p class="font-[JetBrains_Mono] text-white/60 text-sm uppercase tracking-widest">
+            [ SYSTÈME : EN ATTENTE DES DONNÉES TÉLÉMÉTRIQUES... ]
+          </p>
+        </div>
+      ) : (
+        <div class="relative pl-8 space-y-12">
+          <!-- Continuous glowing beam -->
+          <div class="absolute left-[1px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-white/40 via-white/10 to-transparent"></div>
+          
+          {parcoursTrie.map((etape: any, index: number) => (
+            <div class="timeline-item opacity-0 translate-x-8 transition-all duration-700 ease-out relative p-6 md:p-8 ml-6 md:ml-8 group bg-black/40 border border-white/10 hover:border-white/30 backdrop-blur-sm cursor-default" style={`clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%); transition-delay: ${index * 150}ms;`}>
+              <!-- Glowing connection dot -->
+              <div class="absolute -left-[37px] md:-left-[45px] top-8 w-3 h-3 border border-white/50 bg-black group-hover:bg-white group-hover:shadow-[0_0_15px_rgba(255,255,255,0.8)] transition-all duration-300 z-10"></div>
+              
+              <!-- Animated connection line -->
+              <div class="absolute -left-[35px] md:-left-[43px] top-[37px] h-[1px] bg-white/50 group-hover:bg-white transition-all duration-500 w-0 group-hover:w-8 origin-left z-0"></div>
+              <div class="absolute -left-[35px] md:-left-[43px] top-[37px] w-8 h-[1px] bg-white/10 z-0"></div>
+              
+              <!-- Card Content -->
+              <div class="font-[JetBrains_Mono] text-[10px] md:text-xs text-white/40 mb-4 tracking-[0.2em] uppercase flex items-center gap-2">
+                <span class="inline-block w-2 h-2 bg-white/20 group-hover:bg-white transition-colors animate-pulse"></span>
+                [ SYS_TIME_REF : {etape.data.date} ]
+              </div>
+              
+              <h4 class="font-[Space_Grotesk] text-xl md:text-2xl mb-4 uppercase font-bold text-white/90 group-hover:text-white transition-colors tracking-tight">
+                {etape.data.titre}
+              </h4>
+              
+              <p class="font-[JetBrains_Mono] text-sm text-white/50 leading-relaxed border-l-2 border-white/10 pl-4 group-hover:border-white/40 group-hover:text-white/70 transition-colors">
+                {etape.data.description}
+              </p>
+              
+              <!-- Sci-fi decorative corner bracket -->
+              <div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white/0 group-hover:border-white/20 transition-colors" style="clip-path: polygon(100% 0, 100% 100%, 0 100%);"></div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+
+    <!-- Contact Section -->
+    <section class="relative pb-24" id="contact">
+      <div class="data-shard p-10 md:p-16 text-center group border-white/20">
+        <div class="relative z-10">
+          <h2 class="font-[Space_Grotesk] text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight uppercase">
+            {contact?.data?.titre || "INITIATE_CONTACT()"}
+          </h2>
+          <p class="font-[JetBrains_Mono] text-sm md:text-base text-white/60 mb-10 max-w-2xl mx-auto leading-relaxed">
+            {contact?.data?.description || "Que ce soit pour de l'architecture cloud, du développement logiciel ou du bug hunting, je suis ouvert aux nouvelles opportunités."}
+          </p>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href={`mailto:${contact?.data?.email || "contact@example.com"}`} class="inline-flex items-center justify-center px-10 py-5 font-[JetBrains_Mono] text-sm font-bold text-black transition-all bg-white hover:bg-white/80 border border-white w-full sm:w-auto">
+              <span class="flex items-center gap-3 uppercase">
+                <span class="material-symbols-outlined">terminal</span>
+                Exécuter Requête
+              </span>
+            </a>
+            
+            <a href="/cv.pdf" target="_blank" download class="inline-flex items-center justify-center px-10 py-5 font-[JetBrains_Mono] text-sm font-bold text-white transition-all bg-black hover:bg-white/10 border border-white/30 hover:border-white w-full sm:w-auto group">
+              <span class="flex items-center gap-3 uppercase tracking-widest group-hover:scale-105 transition-transform">
+                <span class="material-symbols-outlined">download</span>
+                Télécharger CV
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Command Center Navigation -->
+  <nav slot="fixed" id="command-center" class="fixed bottom-0 left-0 w-full bg-gradient-to-t from-black/95 to-transparent pt-10 pb-6 px-6 z-[100] border-t border-white/5 backdrop-blur-md flex justify-center gap-1 md:gap-2">
+    <a class="cmd-link font-[JetBrains_Mono] text-[10px] md:text-xs text-white/50 py-2 px-3 md:px-4 bg-white/[0.02] border border-white/5 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all uppercase" href="#home">cd /home</a>
+    <a class="cmd-link font-[JetBrains_Mono] text-[10px] md:text-xs text-white/50 py-2 px-3 md:px-4 bg-white/[0.02] border border-white/5 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all uppercase" href="#projects">ls ./projects</a>
+    <a class="cmd-link active font-[JetBrains_Mono] text-[10px] md:text-xs text-white py-2 px-3 md:px-4 bg-white/10 border border-white/30 transition-all uppercase" href="#experience">cat history.log</a>
+    <a class="cmd-link font-[JetBrains_Mono] text-[10px] md:text-xs text-white/50 py-2 px-3 md:px-4 bg-white/[0.02] border border-white/5 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all uppercase" href="#contact">ping -c 4 contact<span class="blink">_</span></a>
+  </nav>
+
+  <!-- Chatbot Window -->
+  <div slot="fixed" id="chat-window" class="hidden fixed right-6 w-80 sm:w-96 overflow-hidden flex-col z-50" style="bottom: 148px; background: rgba(8,8,8,0.97); border: 1px solid rgba(255,255,255,0.15);">
+    <div class="p-3 border-b flex justify-between items-center" style="background: rgba(15,15,15,0.99); border-color: rgba(255,255,255,0.1);">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 bg-white inline-block"></span>
+        <span class="font-[JetBrains_Mono] text-[10px] font-bold text-white uppercase tracking-widest">AI_ASSISTANT v1.0</span>
+      </div>
+      <button id="close-chat" class="text-white/40 hover:text-white transition-colors leading-none">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+
+    <div id="chat-messages" class="p-3 overflow-y-auto flex flex-col gap-2 font-[JetBrains_Mono] text-xs" style="height: 220px; background: #050505;">
+      <div class="text-white/70 p-2 self-start max-w-[90%] leading-relaxed" style="border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03);">
+        &gt; SYS.INIT<br/>&gt; Bonjour. Je suis l'interface AI d'Akram.
+      </div>
+    </div>
+
+    <div class="flex" style="background: rgba(5,5,5,0.99); border-top: 1px solid rgba(255,255,255,0.1);">
+      <input type="text" id="chat-input" form="chat-form" placeholder="Entrez la commande..." class="flex-1 bg-transparent px-3 py-2 text-white text-xs font-[JetBrains_Mono] focus:outline-none placeholder:text-white/25" required autocomplete="off" />
+      <form id="chat-form" style="display:contents;">
+        <button type="submit" class="px-4 py-2 font-[JetBrains_Mono] text-[10px] uppercase font-bold shrink-0" style="background: #fff; color: #000; border-left: 1px solid rgba(255,255,255,0.15);">
+          EXEC
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Chatbot Toggle Button -->
+  <div slot="fixed" class="fixed right-6 z-[110] group" style="bottom: 88px;">
+    <button id="chat-toggle-btn" class="w-12 h-12 flex items-center justify-center relative transition-all duration-200 hover:bg-white/5 cursor-pointer" style="background: #0a0a0a; border: 1px solid rgba(255,255,255,0.3);" title="AI Assistant">
+      <span class="material-symbols-outlined text-white" style="font-size:20px;">terminal</span>
+      <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-white rounded-full"></span>
+    </button>
+    <span class="absolute right-14 top-1/2 -translate-y-1/2 font-[JetBrains_Mono] text-[9px] text-white/40 uppercase tracking-widest whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">AI</span>
+  </div>
+
+  <!-- Global Image Lightbox Overlay -->
+  <dialog id="image-lightbox" class="bg-transparent m-auto w-full h-full max-w-none max-h-none backdrop:bg-black/95 p-4 sm:p-8 cursor-zoom-out transition-opacity duration-300 opacity-0 z-[9999]" onclick="if(event.target === this) closeLightbox()">
+    <div class="w-full h-full flex items-center justify-center pointer-events-none">
+      <img id="lightbox-img" src="" class="max-w-full max-h-full object-contain shadow-2xl border border-white/10 pointer-events-auto" />
+      <button class="absolute top-6 right-6 text-white/50 hover:text-white transition-colors p-2 bg-black/50 border border-white/10 pointer-events-auto" onclick="closeLightbox()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+  </dialog>
+
+  <!-- Scripts -->
+  <script is:inline src="https://unpkg.com/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
+  
+  <script is:inline>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Initialize Lenis — exposed globally for smooth-scroll links
+      window.lenis = new Lenis({
+        duration: 1.4,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      });
+      const lenis = window.lenis;
+
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+
+      // Intersection Observer for Timeline Items
+      const timelineItems = document.querySelectorAll('.timeline-item');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.remove('opacity-0', 'translate-x-8');
+            entry.target.classList.add('opacity-100', 'translate-x-0');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      timelineItems.forEach(item => observer.observe(item));
+
+      // Intercept ALL hash-anchor clicks for smooth Lenis scroll
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+          const hash = anchor.getAttribute('href');
+          const target = document.querySelector(hash);
+          if (target) {
+            e.preventDefault();
+            lenis.scrollTo(target, { offset: -80, duration: 1.6 });
+          }
+        });
+      });
+
+      // Nav highlighting logic
+      const sections = document.querySelectorAll('section');
+      const navLinks = document.querySelectorAll('.cmd-link');
+      
+      window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop;
+          if (scrollY >= sectionTop - 200) {
+            current = section.getAttribute('id');
+          }
+        });
+        
+        navLinks.forEach(link => {
+          link.classList.remove('active', 'text-white', 'bg-white/10', 'border-white/30');
+          link.classList.add('text-white/50', 'bg-white/[0.02]', 'border-white/5');
+          if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active', 'text-white', 'bg-white/10', 'border-white/30');
+            link.classList.remove('text-white/50', 'bg-white/[0.02]', 'border-white/5');
+          }
+        });
+      });
+    });
+  </script>
+
+  <script>
+    declare global {
+      interface Window {
+        openLightbox: (src: string) => void;
+        closeLightbox: () => void;
+      }
+    }
+
+    const chatWindow = document.getElementById("chat-window") as HTMLDivElement;
+    const chatToggleBtn = document.getElementById("chat-toggle-btn") as HTMLButtonElement;
+    const closeChatBtn = document.getElementById("close-chat") as HTMLButtonElement;
+    const chatForm = document.getElementById("chat-form") as HTMLFormElement;
+    const chatInput = document.getElementById("chat-input") as HTMLInputElement;
+    const chatMessages = document.getElementById("chat-messages") as HTMLDivElement;
+
+    const openChat = () => {
+      chatWindow.classList.remove('hidden', 'chat-hiding');
+      chatWindow.classList.add('flex', 'chat-visible');
+    };
+    const closeChat = () => {
+      chatWindow.classList.remove('chat-visible');
+      chatWindow.classList.add('chat-hiding');
+      // Hide after animation completes
+      setTimeout(() => {
+        chatWindow.classList.remove('flex', 'chat-hiding');
+        chatWindow.classList.add('hidden');
+      }, 180);
+    };
+    const toggleChat = () => {
+      const isOpen = chatWindow.classList.contains('flex');
+      isOpen ? closeChat() : openChat();
+    };
+    if (chatToggleBtn) chatToggleBtn.addEventListener("click", toggleChat);
+    if (closeChatBtn) closeChatBtn.addEventListener("click", closeChat);
+
+    // Lightbox Logic
+    const lightbox = document.getElementById("image-lightbox") as HTMLDialogElement;
+    const lightboxImg = document.getElementById("lightbox-img") as HTMLImageElement;
+    
+    window.openLightbox = (src: string) => {
+      if (lightbox && lightboxImg) {
+        lightboxImg.src = src;
+        lightbox.showModal();
+        // Trigger fade in
+        requestAnimationFrame(() => {
+          lightbox.classList.remove("opacity-0");
+        });
+      }
+    };
+
+    window.closeLightbox = () => {
+      if (lightbox) {
+        lightbox.classList.add("opacity-0");
+        setTimeout(() => {
+          lightbox.close();
+        }, 300); // match duration-300
+      }
+    };
+
+    // Close lightbox on Escape key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        window.closeLightbox();
+      }
+    });
+
+    const addMessage = (text: string, isUser: boolean) => {
+      const msgDiv = document.createElement("div");
+      const base = "p-2 max-w-[90%] text-xs font-[JetBrains_Mono] leading-relaxed";
+      const style = isUser
+        ? "self-end" 
+        : "self-start";
+      msgDiv.className = `${base} ${style}`;
+      msgDiv.style.cssText = isUser 
+        ? "background:#fff; color:#000; border:1px solid rgba(255,255,255,0.3);"
+        : "background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.75); border:1px solid rgba(255,255,255,0.1);";
+      msgDiv.textContent = `> ${text}`;
+      chatMessages.appendChild(msgDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+
+    // Allow Enter key on input (input is outside form element)
+    if (chatInput) chatInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        chatForm?.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+      }
+    });
+
+    if (chatForm) chatForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const question = chatInput.value.trim();
+      if (!question) return;
+
+      addMessage(question, true);
+      chatInput.value = "";
+
+      const loadingId = "loading-" + Date.now();
+      const loadingDiv = document.createElement("div");
+      loadingDiv.id = loadingId;
+      loadingDiv.className = "border border-white/10 text-white/50 p-3 self-start max-w-[85%] text-xs animate-pulse font-[JetBrains_Mono] uppercase tracking-wider bg-black/50";
+      loadingDiv.textContent = "> PROCESSING...";
+      chatMessages.appendChild(loadingDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question }),
+        });
+
+        const data = await response.json();
+        document.getElementById(loadingId)?.remove();
+        addMessage(data.reply, false);
+      } catch (error) {
+        document.getElementById(loadingId)?.remove();
+        addMessage("ERR_CONNECTION_FAILED", false);
+      }
+    });
+  </script>
 </Layout>
