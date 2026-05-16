@@ -58,3 +58,93 @@
   --font-label-sm: "JetBrains Mono", monospace;
   --font-mono-micro: "JetBrains Mono", monospace;
 }
+
+/* Project Modal Animations (HMI Feel) */
+.project-modal {
+  opacity: 0;
+  transform: scale(0.98) translateY(10px);
+  filter: blur(4px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s cubic-bezier(0.16, 1, 0.3, 1), display 0.5s allow-discrete;
+}
+
+.project-modal[open] {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  filter: blur(0px);
+}
+
+@starting-style {
+  .project-modal[open] {
+    opacity: 0;
+    transform: scale(0.98) translateY(10px);
+    filter: blur(4px);
+  }
+}
+
+.project-modal::backdrop {
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  transition: background 0.5s ease, backdrop-filter 0.5s ease, display 0.5s allow-discrete;
+}
+
+.project-modal[open]::backdrop {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+@starting-style {
+  .project-modal[open]::backdrop {
+    background: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0px);
+  }
+}
+
+/* Internal elements staggered reveal */
+.project-modal[open] .modal-header {
+  animation: hmi-reveal-down 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+.project-modal[open] .modal-tags {
+  animation: hmi-reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+
+.project-modal[open] .modal-title {
+  animation: hmi-reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+.project-modal[open] .modal-prose {
+  animation: hmi-reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+@keyframes hmi-reveal-down {
+  from { opacity: 0; transform: translateY(-15px); filter: blur(2px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes hmi-reveal-up {
+  from { opacity: 0; transform: translateY(15px); filter: blur(2px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Scroll Reveal — generic (project cards, section headers, contact) */
+.reveal-item {
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(3px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-item.revealed {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0px);
+}
+
+/* Chatbot — blinking block cursor during typewriter */
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
